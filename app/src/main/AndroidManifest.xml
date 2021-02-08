@@ -2,11 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="net.mssc.clientecontentproviderusuarios">
 
-    <permission android:name="net.socorrosamano.actividadesenandroid.READ_DATABASE"
-        android:protectionLevel="normal" />
-
-    <permission android:name="net.socorrosamano.actividadesenandroid.WRITE_DATABASE"
-        android:protectionLevel="normal" />
+    <uses-permission android:name="net.socorrosamano.actividadesenandroid.provider.WRITE_PROVIDER"/>
+    <uses-permission android:name="net.socorrosamano.actividadesenandroid.provider.WRITE_PROVIDER"/>
 
     <application
         android:allowBackup="true"
@@ -18,7 +15,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
