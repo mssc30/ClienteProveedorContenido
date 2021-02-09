@@ -8,4 +8,6 @@
     <string name="nombre">Nombre</string>
     <string name="userList">Lista de usuarios</string>
     <string name="agregar">Agregar Usuarios</string>
+    <string name="editar">Editar</string>
+    <string name="eliminar">Eliminar</string>
 </resources>

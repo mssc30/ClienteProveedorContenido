@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity {
     EditText txtEmail;
     EditText txtTelefono;
     ContentValues cv;
-    Button btnInsert;
+    Button btnInsert, btnUpdate, btnDelete;
+    String id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +47,29 @@ public class MainActivity extends AppCompatActivity {
         txtEmail = findViewById(R.id.txtEmailUser);
         txtTelefono = findViewById(R.id.txtTelefonoUser);
         btnInsert = findViewById(R.id.btnInsert);
+        btnUpdate = findViewById(R.id.btnUpdate);
+        btnDelete = findViewById(R.id.btnDelete);
 
         cr = getContentResolver();
         cv = new ContentValues();
 
+        metodoQuery();
+
+        btnInsert.setOnClickListener(v->{
+            metodoInsert();
+        });
+
+        btnUpdate.setOnClickListener(v->{
+            metodoUpdate();
+        });
+
+        btnDelete.setOnClickListener(v->{
+            metodoDelete();
+        });
+
+    }
+
+    public void metodoQuery(){
         //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 1--------------------//
         cr = getContentResolver();
         Cursor c = cr.query(
@@ -73,9 +93,9 @@ public class MainActivity extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
               @Override
               public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                  String id = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+                  id = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
 
-                  //-------------------------------CONSUMIR CONTENT PROVIDER METODO QUERY CASO 2---------------------//
+                  //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 2--------------------//
                   Cursor getUno = cr.query(
                           Uri.parse(CONTENT_URI+ id),
                           null,
@@ -101,17 +121,59 @@ public class MainActivity extends AppCompatActivity {
         );
 
         spinner.setAdapter(simpleCursorAdapter);
+    }
 
-        btnInsert.setOnClickListener(v->{
-            //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
-            cv.put(MiProviderContrato.Usuarios.NOMBRE, txtNombre.getText().toString());
-            cv.put(MiProviderContrato.Usuarios.CONTRASENA, txtPass.getText().toString());
-            cv.put(MiProviderContrato.Usuarios.EMAIL, txtEmail.getText().toString());
-            cv.put(MiProviderContrato.Usuarios.TELEFONO, txtTelefono.getText().toString());
+    public void metodoInsert(){
+        cv.clear();
 
-            Uri uri = cr.insert(CONTENT_URI, cv);
+        //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
+        cv.put(MiProviderContrato.Usuarios.NOMBRE, txtNombre.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.CONTRASENA, txtPass.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.EMAIL, txtEmail.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.TELEFONO, txtTelefono.getText().toString());
+
+        Uri uri = cr.insert(CONTENT_URI, cv);
+
+        if(!uri.toString().equals("")){
             Toast.makeText(getApplicationContext(), "Usuario agregado con exito", Toast.LENGTH_LONG).show();
-        });
+            metodoQuery(); //actualizar spinner
+        }else{
+            Toast.makeText(getApplicationContext(), "No se pudo agregar el usuario", Toast.LENGTH_LONG).show();
+        }
 
+    }
+
+    public void metodoUpdate(){
+        cv.clear();
+
+        //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
+        cv.put(MiProviderContrato.Usuarios.NOMBRE, txtNombre.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.CONTRASENA, txtPass.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.EMAIL, txtEmail.getText().toString());
+        cv.put(MiProviderContrato.Usuarios.TELEFONO, txtTelefono.getText().toString());
+
+        Uri update = Uri.parse(CONTENT_URI + id);
+
+        int ok = cr.update(update, cv, null, null);
+
+        if(ok > 0){
+            Toast.makeText(getApplicationContext(), "Usuario modificado con exito", Toast.LENGTH_LONG).show();
+            metodoQuery(); //actualizar spinner
+        }else{
+            Toast.makeText(getApplicationContext(), "No se edito el usuario " + id, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public void metodoDelete(){
+        Uri delete = Uri.parse(CONTENT_URI + id);
+
+        int ok = cr.delete(delete, null, null);
+
+        if(ok > 0){
+            Toast.makeText(getApplicationContext(), "Usuario elimina con exito", Toast.LENGTH_LONG).show();
+            metodoQuery(); //actualizar spinner
+        }else{
+            Toast.makeText(getApplicationContext(), "No se elimino el usuario " + id, Toast.LENGTH_LONG).show();
+        }
     }
 }
