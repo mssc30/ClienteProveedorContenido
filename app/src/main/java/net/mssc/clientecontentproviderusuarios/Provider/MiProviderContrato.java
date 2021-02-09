@@ -4,8 +4,8 @@ import android.net.Uri;
 import android.provider.BaseColumns;
 
 public class MiProviderContrato {
-    public static final String AUTHORITY = "net.socorrosamano.actividadesenandroid.provider"; //NO SE QUE VA AQUI
-    public static final Uri CONTENT_URI = null;
+    //public static final String AUTHORITY = "net.socorrosamano.actividadesenandroid.provider"; //NO SE QUE VA AQUI
+    //public static final Uri CONTENT_URI = null;
 
     public MiProviderContrato() {
         throw new RuntimeException("Stub!");
