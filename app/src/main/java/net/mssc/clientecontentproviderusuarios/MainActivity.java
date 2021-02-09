@@ -5,6 +5,7 @@ import androidx.core.content.ContextCompat;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -27,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     ContentResolver cr;
     Uri CONTENT_URI = MiProviderContrato.Usuarios.CONTENT_URI;
     Spinner spinner;
+    Button btnAgregar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,5 +89,12 @@ public class MainActivity extends AppCompatActivity {
 
         spinner.setAdapter(simpleCursorAdapter);
 
+        btnAgregar = findViewById(R.id.btnAgregar);
+
+        btnAgregar.setOnClickListener(v -> {
+            Toast.makeText(getApplicationContext(),"entro", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(getBaseContext(), AgregarActivity.class);
+            startActivity(intent);
+        });
     }
 }

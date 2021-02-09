@@ -43,15 +43,20 @@ public class AgregarActivity extends AppCompatActivity {
         cr = getContentResolver();
         cv = new ContentValues();
 
-        cv.put(MiProviderContrato.Usuarios.NOMBRE, "Koko");
-        cv.put(MiProviderContrato.Usuarios.CONTRASENA, "123");
-        cv.put(MiProviderContrato.Usuarios.EMAIL, "kokoy@google.com");
-        cv.put(MiProviderContrato.Usuarios.TELEFONO, "445");
+        btnRegistrar.setOnClickListener(v->{
+            cv.put(MiProviderContrato.Usuarios.NOMBRE, txtNombre.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.CONTRASENA, txtPass.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.EMAIL, txtEmail.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.TELEFONO, txtTelefono.getText().toString());
 
-        Uri uri = cr.insert(CONTENT_URI, cv);
+            Uri uri = cr.insert(CONTENT_URI, cv);
+            Toast.makeText(getApplicationContext(), "Usuario agregado con exito", Toast.LENGTH_LONG).show();
+            finish();
+        });
 
-        Toast.makeText(getApplicationContext(), "Usuario agregado con exito", Toast.LENGTH_LONG);
+        btnCancelar.setOnClickListener(v->{
+            finish();
+        });
 
-        finish();
     }
 }
