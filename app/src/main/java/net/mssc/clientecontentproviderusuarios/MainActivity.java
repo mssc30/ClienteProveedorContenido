@@ -1,19 +1,16 @@
 package net.mssc.clientecontentproviderusuarios;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.SimpleCursorAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -29,14 +26,31 @@ public class MainActivity extends AppCompatActivity {
     ContentResolver cr;
     Uri CONTENT_URI = MiProviderContrato.Usuarios.CONTENT_URI;
     Spinner spinner;
-    Button btnAgregar;
+    EditText txtNombre;
+    EditText txtPass;
+    EditText txtEmail;
+    EditText txtTelefono;
+    ContentValues cv;
+    Button btnInsert;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //CONSUMER CONTENT PROVIDER, METODO QUERY CASO 1
+
+        //------INICIALIZAR ELEMENTOS--------//
+        spinner = findViewById(R.id.spinnerP);
+        txtNombre = findViewById(R.id.txtNombreUser);
+        txtPass = findViewById(R.id.txtPassUser);
+        txtEmail = findViewById(R.id.txtEmailUser);
+        txtTelefono = findViewById(R.id.txtTelefonoUser);
+        btnInsert = findViewById(R.id.btnInsert);
+
+        cr = getContentResolver();
+        cv = new ContentValues();
+
+        //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 1--------------------//
         cr = getContentResolver();
         Cursor c = cr.query(
                 CONTENT_URI,
@@ -45,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
                 null,
                 null);
 
-        //mostrar los usuarios en el CP
-        //adaptador
+
+        //MOSTRAR USUARIOS SPINNER
         SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(
                 this, //contexto
                 android.R.layout.simple_list_item_2, //layout con una lista de 2 item
@@ -55,14 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 new int[]{android.R.id.text1, android.R.id.text2}, //ids de controles a donde se van a poner los elementos
                 SimpleCursorAdapter.NO_SELECTION //comportamiento para los controles
         );
-        //settear adaptador a spinner
-        spinner = findViewById(R.id.spinnerP);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
               @Override
               public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                   String id = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
 
-                  //CONSUMIR CONTENT PROVIDER METODO QUERY CASO 2
+                  //-------------------------------CONSUMIR CONTENT PROVIDER METODO QUERY CASO 2---------------------//
                   Cursor getUno = cr.query(
                           Uri.parse(CONTENT_URI+ id),
                           null,
@@ -89,12 +102,16 @@ public class MainActivity extends AppCompatActivity {
 
         spinner.setAdapter(simpleCursorAdapter);
 
-        btnAgregar = findViewById(R.id.btnAgregar);
+        btnInsert.setOnClickListener(v->{
+            //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
+            cv.put(MiProviderContrato.Usuarios.NOMBRE, txtNombre.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.CONTRASENA, txtPass.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.EMAIL, txtEmail.getText().toString());
+            cv.put(MiProviderContrato.Usuarios.TELEFONO, txtTelefono.getText().toString());
 
-        btnAgregar.setOnClickListener(v -> {
-            Toast.makeText(getApplicationContext(),"entro", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(getBaseContext(), AgregarActivity.class);
-            startActivity(intent);
+            Uri uri = cr.insert(CONTENT_URI, cv);
+            Toast.makeText(getApplicationContext(), "Usuario agregado con exito", Toast.LENGTH_LONG).show();
         });
+
     }
 }
