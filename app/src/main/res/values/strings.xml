@@ -10,4 +10,5 @@
     <string name="agregar">Agregar Usuarios</string>
     <string name="editar">Editar</string>
     <string name="eliminar">Eliminar</string>
+    <string name="tipo">Tipo MIME</string>
 </resources>

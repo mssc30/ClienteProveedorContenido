@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     EditText txtEmail;
     EditText txtTelefono;
     ContentValues cv;
-    Button btnInsert, btnUpdate, btnDelete;
+    Button btnInsert, btnUpdate, btnDelete, btnMIME;
     String id;
 
     @Override
@@ -49,27 +49,39 @@ public class MainActivity extends AppCompatActivity {
         btnInsert = findViewById(R.id.btnInsert);
         btnUpdate = findViewById(R.id.btnUpdate);
         btnDelete = findViewById(R.id.btnDelete);
+        btnMIME = findViewById(R.id.btnMIME);
 
         cr = getContentResolver();
         cv = new ContentValues();
 
         metodoQuery();
 
-        btnInsert.setOnClickListener(v->{
+        btnInsert.setOnClickListener(v -> {
             metodoInsert();
         });
 
-        btnUpdate.setOnClickListener(v->{
+        btnUpdate.setOnClickListener(v -> {
             metodoUpdate();
         });
 
-        btnDelete.setOnClickListener(v->{
+        btnDelete.setOnClickListener(v -> {
             metodoDelete();
+        });
+
+        btnMIME.setOnClickListener(v -> {
+            metodoMIME(Uri.parse(CONTENT_URI + id));
         });
 
     }
 
-    public void metodoQuery(){
+    private void metodoMIME(Uri uri) {
+        //------------------CONSUMER CONTENT PROVIDER, METODO GET TYPE--------------------//
+        String mime = cr.getType(uri);
+
+        Toast.makeText(getApplicationContext(), mime, Toast.LENGTH_LONG).show();
+    }
+
+    public void metodoQuery() {
         //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 1--------------------//
         cr = getContentResolver();
         Cursor c = cr.query(
@@ -91,39 +103,46 @@ public class MainActivity extends AppCompatActivity {
         );
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-              @Override
-              public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                  id = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
+          @Override
+          public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+              id = ((TextView) view.findViewById(android.R.id.text1)).getText().toString();
 
-                  //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 2--------------------//
-                  Cursor getUno = cr.query(
-                          Uri.parse(CONTENT_URI+ id),
-                          null,
-                          null,
-                          null,
-                          null
-                  );
+              //------------------CONSUMER CONTENT PROVIDER, METODO QUERY CASO 2--------------------//
+              Cursor getUno = cr.query(
+                      Uri.parse(CONTENT_URI + id),
+                      null,
+                      null,
+                      null,
+                      null
+              );
 
-                  String datos = "";
-                  if(getUno.moveToNext()) {
-                      datos = getUno.getInt(0) + " - " + getUno.getString(1) + " - " + getUno.getString(2);
-                  }
-
-                  if(!datos.equals(""))
-                      Snackbar.make(view, datos, BaseTransientBottomBar.LENGTH_INDEFINITE).show();
-              }
-
-              @Override
-              public void onNothingSelected(AdapterView<?> adapterView) {
-
+              if (getUno.moveToNext()) {
+                  txtNombre.setText(getUno.getString(1));
+                  txtEmail.setText(getUno.getString(2));
+                  txtPass.setText(getUno.getString(3));
+                  txtTelefono.setText(getUno.getString(4));
               }
           }
+
+          @Override
+          public void onNothingSelected(AdapterView<?> adapterView) {
+
+          }
+      }
         );
+
+        spinner.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                metodoMIME(CONTENT_URI);
+                return false;
+            }
+        });
 
         spinner.setAdapter(simpleCursorAdapter);
     }
 
-    public void metodoInsert(){
+    public void metodoInsert() {
         cv.clear();
 
         //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
@@ -134,16 +153,16 @@ public class MainActivity extends AppCompatActivity {
 
         Uri uri = cr.insert(CONTENT_URI, cv);
 
-        if(!uri.toString().equals("")){
+        if (!uri.toString().equals("")) {
             Toast.makeText(getApplicationContext(), "Usuario agregado con exito", Toast.LENGTH_LONG).show();
             metodoQuery(); //actualizar spinner
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "No se pudo agregar el usuario", Toast.LENGTH_LONG).show();
         }
 
     }
 
-    public void metodoUpdate(){
+    public void metodoUpdate() {
         cv.clear();
 
         //------------------CONSUMER CONTENT PROVIDER, METODO INSERT--------------------//
@@ -156,24 +175,33 @@ public class MainActivity extends AppCompatActivity {
 
         int ok = cr.update(update, cv, null, null);
 
-        if(ok > 0){
+        if (ok > 0) {
             Toast.makeText(getApplicationContext(), "Usuario modificado con exito", Toast.LENGTH_LONG).show();
             metodoQuery(); //actualizar spinner
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "No se edito el usuario " + id, Toast.LENGTH_LONG).show();
         }
     }
 
-    public void metodoDelete(){
+    public void metodoDelete() {
         Uri delete = Uri.parse(CONTENT_URI + id);
 
         int ok = cr.delete(delete, null, null);
 
-        if(ok > 0){
+        if (ok > 0) {
             Toast.makeText(getApplicationContext(), "Usuario elimina con exito", Toast.LENGTH_LONG).show();
+            limpiarTextBox();
             metodoQuery(); //actualizar spinner
-        }else{
+        } else {
             Toast.makeText(getApplicationContext(), "No se elimino el usuario " + id, Toast.LENGTH_LONG).show();
         }
     }
+
+    public void limpiarTextBox() {
+        txtNombre.setText("", null);
+        txtPass.setText("", null);
+        txtEmail.setText("", null);
+        txtTelefono.setText("", null);
+    }
+
 }
